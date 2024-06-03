@@ -1,0 +1,8 @@
+[package]
+name = "iaik-thesis"
+version = "0.1.0"
+entrypoint = "lib.typ"
+
+[template]
+path = "template"
+entrypoint = "thesis.typ"

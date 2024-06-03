@@ -1,4 +1,4 @@
-#import "template/lib.typ": *
+#import "@local/iaik-thesis:0.1.0": *
 
 #show: thesis.with(
   title: "Some Awesome Title",
@@ -33,11 +33,12 @@
 #lorem(30)
 #cite(<doe2024dummy>)
 
-#code-block(```rust
+#code-block(caption: "Rust Hello World",
+```rust
 fn main() {
     println!("Hello World!");
 }
-```, caption: "Rust Hello World")
+```)
 
 == Two
 
@@ -64,20 +65,21 @@ Bullet list:
 
 = Five
 
-#lorem(30)
+#lorem(20)
 
-#figure(image("figures/logo.svg"), caption: "Logo")
+#figure(image("figures/logo.svg", width: 30%), caption: "Logo")
 
 #lorem(30)
 
 == Six
 
-#lorem(30)
+#lorem(20)
 
 Math equations:
 
 $
-  s = sum_(i=1)^n i \
+  s &= sum_(i=1)^n i \
+  t_(n+1) &= t_n + 1/2 * a^2
 $
 
 Tables:

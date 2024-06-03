@@ -3,6 +3,7 @@
   author: "Author",
   curriculum: "Curriculum",
   supervisors: (), 
+  date: datetime.today(),
   body
 ) = {
   set document(title: title, author: author)
@@ -32,7 +33,7 @@
 
   v(1.25cm)
 
-  box(text(size: 18pt, weight: "bold", title))
+  box(text(size: 20pt, weight: "bold", title))
 
   set align(center + bottom)
 
@@ -42,7 +43,11 @@
 
   v(1.25cm)
 
-  block(text(size: 12pt, weight: "bold", "Supervisors"))
+  if supervisors.len() > 1 {
+    block(text(size: 12pt, weight: "bold", "Supervisors"))
+  } else {
+    block(text(size: 12pt, weight: "bold", "Supervisor"))
+  }
 
   for supervisor in supervisors [
     #supervisor \
@@ -55,7 +60,7 @@
   v(1.5cm)
 
   box(text(
-    size: 10pt, [Graz, #datetime.today().display("[month repr:long] [year]")],
+    size: 10pt, [Graz, #date.display("[month repr:long] [year]")],
   ))
 
   set align(top + left)
@@ -82,7 +87,7 @@
 
   show heading.where(level: 1): it => {
     pagebreak()
-    text(size: 18pt, it)
+    text(size: 20pt, it)
     v(20pt)
   }
   show heading.where(level: 2): it => {
@@ -96,7 +101,7 @@
   }
 
   show heading.where(level: 4): it => {
-    text(size: 12pt, it)
+    text(size: 11pt, it)
     v(8pt)
   }
 
@@ -160,7 +165,7 @@
 
 // code
 
-#let code-block(body, caption: "Listing") = [
+#let code-block(caption: "Listing", body) = [
   #show raw.line: it => {
     text(fill: gray)[#it.number]
     h(1em)
