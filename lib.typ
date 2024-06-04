@@ -1,95 +1,117 @@
+#import "acronyms.typ": *
+
+// thesis template
 #let thesis(
-  title: "Thesis Title",
-  author: "Author",
+  title: "Title and \nSubtitle\nof the Thesis",
+  author: "Firstname Lastname, BSc",
+  degree: "Degree",
   curriculum: "Curriculum",
-  supervisors: (), 
+  supervisors: (
+    "Firstname Lastname, academic degrees of first supervisor",
+    "Firstname Lastname, academic degrees of next supervisor",
+  ),
   date: datetime.today(),
   body
 ) = {
-  set document(title: title, author: author)
+  set document(title: title.split("\n").join(" "), author: author)
 
-  set text(size: 11pt, font: "New Computer Modern")
+  set text(size: 11pt, font: "New Computer Modern", hyphenate: false)
 
   set cite(style: "alphanumeric")
 
   // title page
 
-  set page(margin: (bottom: 5.5cm))
+  set page(margin: (bottom: 2.75cm))
 
   set align(center)
 
-  let sq = box(
-    width: 10pt, height: 6pt, align(center, square(size: 2.5pt, fill: black)),
-  )
+  image("logo.svg", width: 20%)
 
-  grid(
-    columns: (20%, 60%, 20%), align: (left, center + horizon, right + horizon), image("iaik.svg", width: 30%), text(
-      size: 8pt, font: "Noto Sans", tracking: 3.5pt, [SCIENCE #sq PASSION #sq TECHNOLOGY],
-    ), image("logo.svg", width: 100%),
-  )
+  v(2cm)
 
+  block(text(size: 14pt, author), below: 1.75cm)
 
-  box(text(size: 14pt, author))
-
-  v(1.25cm)
-
-  box(text(size: 20pt, weight: "bold", title))
+  block(text(size: 16pt, weight: "bold", title))
 
   set align(center + bottom)
+  [
+    #set par(leading: 9pt)
+    #text(size: 12pt, weight: "bold", "MASTER'S THESIS") \
+    #text("to achieve the university degree of\n" + degree) \
+    #text("Master's degree programme: " + curriculum)    
+  ]
 
-  block(text(size: 14pt, weight: "bold", "PROJECT"))
+  v(1cm)
 
-  block(text(size: 12pt, "Master's degree programme: " + curriculum))
-
-  v(1.25cm)
+  block(text(size: 10pt, "submitted to"))
+  block(text(weight: "bold", "Graz University of Technology"))
+  v(1.1cm)
 
   if supervisors.len() > 1 {
-    block(text(size: 12pt, weight: "bold", "Supervisors"))
+    block(text(size: 10pt, weight: "bold", "Supervisors"))
   } else {
-    block(text(size: 12pt, weight: "bold", "Supervisor"))
+    block(text(size: 10pt, weight: "bold", "Supervisor"))
   }
 
   for supervisor in supervisors [
-    #supervisor \
+    #text(size: 10pt, supervisor) \
   ]
 
-  block(text(
-    "Institute of Applied Information Processing and Communications\nGraz University of Technology"
-  ))
-
-  v(1.5cm)
+  block(text(size: 10pt, "Institute of Applied Information Processing and Communications"), below: 1.75cm)
 
   box(text(
-    size: 10pt, [Graz, #date.display("[month repr:long] [year]")],
+    size: 8pt, [Graz, #date.display("[month repr:long] [year]")],
   ))
+
+  // style rules
 
   set align(top + left)
 
-  set page(
-    margin: (left: 3cm, right: 3cm, top: 5.5cm, bottom: 5.5cm), numbering: "1",
-  )
+  set page(margin: (left: 3cm, right: 3cm, top: 3.75cm, bottom: 5.5cm))
 
-  // doc rules
+  set par(justify: true)
+
+  set block(below: 2em)
+
   set math.equation(numbering: "(1.1)")
-  set figure(gap: 20pt)
-  show figure: it => {
-    pad(top: 1em, bottom: 1em, it)
-  }
+
+  set figure(gap: 15pt)
 
   set enum(indent: 1em, numbering: "1)a)i)")
+
   set list(indent: 1em)
 
-  set heading(numbering: (..n) => {
-    if n.pos().len() < 4 {
-      numbering("1.1", ..n)
+  set heading(numbering: "1.1 ")
+
+  set page(header: context {
+    // find heading of level 1 on current page
+    let chapter = query(heading.where(level: 1), here()).find(h => h.location().page() == here().page())
+    // if not chapter begin print current chapter in header
+    if chapter == none {
+      let elems = query(selector(heading.where(level: 1)).before(here()))
+      if elems.len() != 0 {
+        align(center, text(style: "italic", "Chapter " + counter(heading.where(level: 1)).display("1") + " " + elems.last().body))
+      }
     }
   })
 
+  // set ref of level 1 heading to Chapter
+  show heading.where(level: 1): set heading(supplement: [Chapter])
+
   show heading.where(level: 1): it => {
     pagebreak()
-    text(size: 20pt, it)
+    v(1.75cm)
+    let count = counter(heading).get()
+    if it.body != [Bibliography] and count.first() > 0 {
+      text(size: 20pt, "Chapter " + counter(heading).display("1"))
+      v(0pt)
+      text(size: 20pt, it.body)
+    } else {
+      text(size: 20pt, it)
+    }
     v(20pt)
   }
+
   show heading.where(level: 2): it => {
     text(size: 14pt, it)
     v(10pt)
@@ -108,6 +130,13 @@
   body
 }
 
+// abstract
+
+#let abstract(body) = {
+  heading(level: 1, outlined: false, numbering: none, "Abstract")
+  body
+}
+
 // table of contents
 
 #let table-of-contents() = [
@@ -116,7 +145,7 @@
       entry // prevent infinite recursion
     } else {
       set text(weight: "bold") if entry.level == 1
-      if entry.level == 1 { v(12pt, weak: true) }
+      if entry.level == 1 { v(18pt, weak: true) }
       let fields = entry.fields()
       let fill = if entry.level != 1 { repeat[~~.] }
       fields.fill = box(width: 100% - .4cm, fill)
@@ -127,45 +156,36 @@
   #outline(indent: auto, depth: 3)
 ]
 
-// list of tables/fiures
+#let list-show-entry(entry, label: <modified-entry>) = {
+  if entry.at("label", default: none) == label {
+    entry // prevent infinite recursion
+  } else {
+    if entry.level == 1 { v(12pt, weak: true) }
+    let fields = entry.fields()
+    let fill = repeat[~~.]
+    fields.fill = box(width: 100% - .4cm, fill)
+    [#outline.entry(..fields.values()) #label]
+  }
+}
 
 #let list-of-figures() = [
-  #let show-entry(entry, label: <modified-entry>) = {
-    if entry.at("label", default: none) == label {
-      entry // prevent infinite recursion
-    } else {
-      if entry.level == 1 { v(12pt, weak: true) }
-      let fields = entry.fields()
-      let fill = repeat[~~.]
-      fields.fill = box(width: 100% - .4cm, fill)
-      [#outline.entry(..fields.values()) #label]
-    }
-  }
-  #show outline.entry: show-entry
-  #outline(title: "List of Figures", target: figure.where(kind: image).or(figure.where(kind: table)))
+  #show outline.entry: list-show-entry
+  #outline(title: "List of Figures", target: figure.where(kind: image))
 ]
 
-// list of code listings
+#let list-of-tables() = [
+  #show outline.entry: list-show-entry
+  #outline(title: "List of Tables", target: figure.where(kind: table))
+]
 
 #let list-of-listings() = [
-  #let show-entry(entry, label: <modified-entry>) = {
-    if entry.at("label", default: none) == label {
-      entry // prevent infinite recursion
-    } else {
-      if entry.level == 1 { v(12pt, weak: true) }
-      let fields = entry.fields()
-      let fill = repeat[~~.]
-      fields.fill = box(width: 100% - .4cm, fill)
-      [#outline.entry(..fields.values()) #label]
-    }
-  }
-  #show outline.entry: show-entry
+  #show outline.entry: list-show-entry
   #outline(title: "List of Listings", target: figure.where(kind: "listing"))
 ]
 
 // code
 
-#let code-block(caption: "Listing", body) = [
+#let code-block(caption: "Listing", label: none, body) = [
   #show raw.line: it => {
     text(fill: gray)[#it.number]
     h(1em)
@@ -175,121 +195,36 @@
     box(
       align(left, body), width: 100%, stroke: (left: .5pt), inset: 10pt, fill: white.darken(0%),
     ), caption: caption, kind: "listing", supplement: [Listing],
-  )
+  ) #label
 ]
 
 #let code(content) = box(content)
 
-// aronyms
+// acknowledgements
 
-#let prefix = "acronym-state-"
-#let acros = state("acronyms", none)
-#let init-acronyms(acronyms) = {
-  acros.update(acronyms)
+#let acknowledgements(body) = {
+  heading(level: 1, outlined: false, numbering: none, "Acknowledgements")
+  body
 }
 
-// Display acronym as clickable link
-#let display-link(acr, text) = {
-  link(label(acr), text)
-}
+// affidavit
 
-// Display acronym
-#let display(acr, text, link: true) = {
-  if link { display-link(acr, text) } else { text }
-}
+#let affidavit() = [
+  #pagebreak()
+  #set align(horizon)
 
-// Display acronym in short form.
-#let acrs(acr, plural: false, link: true) = {
-  if plural { display(acr, acr + "s", link: link) } else { display(acr, acr, link: link) }
-}
-// Display acronym in short plural form
-#let acrspl(acr, link: true) = { acrs(acr, plural: true, link: link) }
+  #align(center, text(weight: "bold", "AFFIDAVIT"))
+  #v(0.5cm)
 
-// Display acronym in long form.
-#let acrl(acr, plural: false, link: true) = {
-  acros.display(
-    acronyms => {
-      let defs = acronyms.at(acr)
-      if type(defs) == "string" {
-        if plural {
-          display(acr, defs + "s", link: link)
-        } else {
-          display(acr, defs, link: link)
-        }
-      } else if type(defs) == "array" {
-        if defs.len() == 0 {
-          panic(
-            "No definitions found for acronym " + acr + ". Make sure it is defined in the dictionary passed to #init-acronyms(dict)",
-          )
-        }
-        if plural {
-          if defs.len() == 1 {
-            display(acr, defs.at(0) + "s", link: link)
-          } else if defs.len() == 2 {
-            display(acr, defs.at(1), link: link)
-          } else {
-            panic(
-              "Definitions should be arrays of one or two strings. Definition of " + acr + " is: " + type(defs),
-            )
-          }
-        } else {
-          display(acr, defs.at(0), link: link)
-        }
-      }
-    },
-  )
-}
-// Display acronym in long plural form.
-#let acrlpl(acr, link: true) = { acrl(acr, plural: true, link: link) }
+  #block(inset: (left: 1cm, right: 1cm))[
+    I declare that I have authored this thesis independently, that I have not used other than the declared sources/resources, and that I have explicitly indicated all material which has been quoted either literally or by content from the sources used.
+    The text document uploaded to TUGRAZonline is identical to
+    the present master’s thesis.
 
-// Display acronym for the first time.
-#let acrf(acr, plural: false, link: true) = {
-  if plural {
-    display(acr, [#acrlpl(acr) (#acr\s)], link: link)
-  } else {
-    display(acr, [#acrl(acr) (#acr)], link: link)
-  }
-  state(prefix + acr, false).update(true)
-}
+    #v(2.5cm)
 
-// Display acronym in plural form for the first time.
-#let acrfpl(acr, link: true) = { acrf(acr, plural: true, link: link) }
-
-// Display acronym. Expands it if used for the first time.
-#let acr(acr, plural: false, link: true) = {
-  state(prefix + acr, false).display(seen => {
-    if seen {
-      if plural { acrspl(acr, link: link) } else { acrs(acr, link: link) }
-    } else {
-      if plural { acrfpl(acr, link: link) } else { acrf(acr, link: link) }
-    }
-  })
-}
-
-// Display acronym in the plural form. Expands it if used for the first time.
-#let acrpl(acronym, link: true) = { acr(acronym, plural: true, link: link) }
-
-// Print an index of all the acronyms and their definitions.
-#let list-of-acronyms(
-  title: "List of Acronyms", sorted: "up", delimiter: ":", acr-col-size: 20%, level: 1, outlined: false,
-) = {
-  assert(
-    sorted in ("keep", "up", "down"), message: "Sorted must be a string either \"keep\", \"up\" or \"down\"",
-  )
-  heading(level: level, outlined: outlined, numbering: none)[#title]
-  acros.display(
-    acronyms=>{
-      let acr-list = acronyms.keys()
-      if sorted == "up" {
-        acr-list = acr-list.sorted()
-      } else if sorted == "down" {
-        acr-list = acr-list.sorted().rev()
-      }
-      for acr in acr-list{
-        table(
-          columns: (acr-col-size, 100% - acr-col-size), stroke: none, inset: 0pt, [*#acr#label(acr)#delimiter*], [#acrl(acr, link: false)],
-        )
-      }
-    },
-  )
-}
+    #line(length: 100%, stroke: .5pt)
+    #v(-.2cm)
+    #align(center, text(size: 8pt, "Date, Signature"))
+  ]
+]

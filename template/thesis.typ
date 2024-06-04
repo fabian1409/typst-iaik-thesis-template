@@ -1,12 +1,13 @@
 #import "@local/iaik-thesis:0.1.0": *
 
 #show: thesis.with(
-  title: "Some Awesome Title",
-  author: "John Doe, BSc",
+  title: "Title and \nSubtitle\nof the Thesis",
+  author: "Firstname Lastname, BSc",
+  degree: "Diplom-Ingenieur",
   curriculum: "Computer Science",
   supervisors: (
-    "Univ.-Prof. Dipl.-Ing. Dr.techn. John Doe",
-    "Dipl.-Ing. John Doe",
+    "Firstname Lastname, academic degrees of first supervisor",
+    "Firstname Lastname, academic degrees of next supervisor",
   ),
 )
 
@@ -18,35 +19,79 @@
   )
 )
 
-#heading(level: 1, outlined: false, numbering: none, "Abstract")
+#affidavit()
 
-#lorem(100)
+#set page(numbering: "i")
+
+#acknowledgements()[
+  #lorem(110)
+]
+
+#abstract()[
+  #lorem(110)
+]
+
+#v(0pt)
+
+*Keywords:*
+Broad keyword $dot$ Keyword $dot$ Specific keyword $dot$ Foo $dot$ Bar
 
 #table-of-contents()
 
 #list-of-figures()
 
+#list-of-tables()
+
 #list-of-listings()
 
-= One
+#list-of-acronyms()
 
+#set page(numbering: "1")
+#counter(page).update(1)
+
+= Introduction <introduction>
+
+#lorem(110)
+
+*Outline.*
 #lorem(30)
-#cite(<doe2024dummy>)
 
-#code-block(caption: "Rust Hello World",
+= Background <background>
+
+#lorem(200)
+
+#pagebreak()
+
+#lorem(200)
+
+= Conclusion <conclusion>
+
+#lorem(110)
+
+= Showcase
+
+This is how to cite references #cite(<doe2024dummy>).
+This is how to refernce labels @introduction, @equation, @table, @code, @image
+This is how to use acronyms #acr("NN").
+
+== Code
+
+Some examples of code blocks and inline code with highlighting.
+
+=== Block
+
+#code-block(caption: "Rust Hello World", label: <code>,
 ```rust
 fn main() {
     println!("Hello World!");
 }
 ```)
 
-== Two
+=== Inline
 
-#lorem(30)
-#code(```rust println!("Hello World!")```)
+This is some inline code #code(```rust println!("Hello World!")```).
 
-
-=== Three
+== Lists
 
 Numbered list:
 + First
@@ -58,31 +103,15 @@ Bullet list:
 - Second
 - Third
 
-==== Four
-
-#lorem(30)
-#acr("NN")
-
-= Five
-
-#lorem(20)
-
-#figure(image("figures/logo.svg", width: 30%), caption: "Logo")
+= Figures
 
 #lorem(30)
 
-== Six
+== Images
 
-#lorem(20)
+#figure(image("figures/logo.svg", width: 30%), caption: "Logo") <image>
 
-Math equations:
-
-$
-  s &= sum_(i=1)^n i \
-  t_(n+1) &= t_n + 1/2 * a^2
-$
-
-Tables:
+== Tables
 
 #figure(
   table(
@@ -92,8 +121,14 @@ Tables:
     [250], [Bar Baz],
   ),
   caption: "Table example"
-)
+) <table>
 
-#list-of-acronyms()
+== Math
+
+$
+  "sum" &= sum_(i=1)^n i \
+  t_(n+1) &= t_n + 1/2 * a^2
+$ <equation>
+
 
 #bibliography("thesis.bib")
