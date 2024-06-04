@@ -67,7 +67,7 @@
 
   set align(top + left)
 
-  set page(margin: (left: 3cm, right: 3cm, top: 3.75cm, bottom: 5.5cm))
+  set page(margin: (left: 3cm, right: 3cm, top: 3.7cm, bottom: 5.6cm))
 
   set par(justify: true)
 
@@ -92,6 +92,7 @@
       if elems.len() != 0 {
         align(center, text(style: "italic", "Chapter " + counter(heading.where(level: 1)).display("1") + " " + elems.last().body))
       }
+      v(-.25cm)
     }
   })
 
@@ -103,13 +104,11 @@
     v(1.75cm)
     let count = counter(heading).get()
     if it.body != [Bibliography] and count.first() > 0 {
-      text(size: 20pt, "Chapter " + counter(heading).display("1"))
-      v(0pt)
-      text(size: 20pt, it.body)
+      par(leading: 22pt, text(size: 20pt,  "Chapter " + counter(heading).display("1") + linebreak() + it.body))
     } else {
       text(size: 20pt, it)
     }
-    v(20pt)
+    v(18pt)
   }
 
   show heading.where(level: 2): it => {
@@ -140,46 +139,54 @@
 // table of contents
 
 #let table-of-contents() = [
-  #let show-entry(entry, label: <modified-entry>) = {
-    if entry.at("label", default: none) == label {
-      entry // prevent infinite recursion
+  #show outline.entry.where(level: 1): it => {
+    if it.body != [References] {
+      v(14pt, weak: true)
+      link(it.element.location(), strong([#it.body #h(1fr) #it.page]))
     } else {
-      set text(weight: "bold") if entry.level == 1
-      if entry.level == 1 { v(18pt, weak: true) }
-      let fields = entry.fields()
-      let fill = if entry.level != 1 { repeat[~~.] }
-      fields.fill = box(width: 100% - .4cm, fill)
-      [#outline.entry(..fields.values()) #label]
+      it
     }
   }
-  #show outline.entry: show-entry
+
+  #show outline.entry.where(level: 2): it => {
+    link(it.element.location(), [
+      #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
+    ])
+  }
+
+  #show outline.entry.where(level: 3): it => {
+    link(it.element.location(), [
+      #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
+    ])
+  }
+
   #outline(indent: auto, depth: 3)
 ]
 
-#let list-show-entry(entry, label: <modified-entry>) = {
-  if entry.at("label", default: none) == label {
-    entry // prevent infinite recursion
-  } else {
-    if entry.level == 1 { v(12pt, weak: true) }
-    let fields = entry.fields()
-    let fill = repeat[~~.]
-    fields.fill = box(width: 100% - .4cm, fill)
-    [#outline.entry(..fields.values()) #label]
-  }
-}
-
 #let list-of-figures() = [
-  #show outline.entry: list-show-entry
+  #show outline.entry: it => {
+    link(it.element.location(), [
+      #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
+    ])
+  }
   #outline(title: "List of Figures", target: figure.where(kind: image))
 ]
 
 #let list-of-tables() = [
-  #show outline.entry: list-show-entry
+  #show outline.entry: it => {
+    link(it.element.location(), [
+      #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
+    ])
+  }
   #outline(title: "List of Tables", target: figure.where(kind: table))
 ]
 
 #let list-of-listings() = [
-  #show outline.entry: list-show-entry
+  #show outline.entry: it => {
+    link(it.element.location(), [
+      #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
+    ])
+  }
   #outline(title: "List of Listings", target: figure.where(kind: "listing"))
 ]
 
@@ -212,8 +219,7 @@
 #let affidavit() = [
   #pagebreak()
   #set align(horizon)
-
-  #align(center, text(weight: "bold", "AFFIDAVIT"))
+  #align(center, text(size: 12pt, weight: "bold", "AFFIDAVIT"))
   #v(0.5cm)
 
   #block(inset: (left: 1cm, right: 1cm))[
@@ -224,7 +230,15 @@
     #v(2.5cm)
 
     #line(length: 100%, stroke: .5pt)
-    #v(-.2cm)
+    #v(-.5cm)
     #align(center, text(size: 8pt, "Date, Signature"))
   ]
 ]
+
+// paragraph with title
+
+#let paragraph(title, body) = {
+  strong(title + ".")
+  h(8pt)
+  body
+}

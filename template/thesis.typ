@@ -31,10 +31,9 @@
   #lorem(110)
 ]
 
-#v(0pt)
-
-*Keywords:*
-Broad keyword $dot$ Keyword $dot$ Specific keyword $dot$ Foo $dot$ Bar
+#paragraph("Keywords")[
+  Broad keyword $dot$ Keyword $dot$ Specific keyword $dot$ Another specific keyword
+]
 
 #table-of-contents()
 
@@ -53,8 +52,9 @@ Broad keyword $dot$ Keyword $dot$ Specific keyword $dot$ Foo $dot$ Bar
 
 #lorem(110)
 
-*Outline.*
-#lorem(30)
+#paragraph("Outline")[
+  #lorem(30)
+]
 
 = Background <background>
 
