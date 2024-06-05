@@ -1,7 +1,7 @@
 #import "@local/iaik-thesis:0.1.0": *
 
 #show: thesis.with(
-  title: "Title and \nSubtitle\nof the Thesis",
+  title: "Title and\nSubtitle\nof the Thesis",
   author: "Firstname Lastname, BSc",
   degree: "Diplom-Ingenieur",
   curriculum: "Computer Science",
@@ -9,48 +9,23 @@
     "Firstname Lastname, academic degrees of first supervisor",
     "Firstname Lastname, academic degrees of next supervisor",
   ),
-)
-
-#init-acronyms(
-  (
+  acknowledgements: [
+    #lorem(200)
+  ],
+  abstract: [
+    #lorem(200)
+  ],
+  keywords: ("Broad keyword", "Keyword", "Specific keyword", "Another specific keyword"),
+  acronyms: (
     "NN": ("Neural Network"),
     "OS": ("Operating System",),
     "BIOS": ("Basic Input/Output System", "Basic Input/Output Systems"),
-  )
+  ),
 )
-
-#affidavit()
-
-#set page(numbering: "i")
-
-#acknowledgements()[
-  #lorem(110)
-]
-
-#abstract()[
-  #lorem(110)
-
-  #paragraph("Keywords")[
-    #("Broad keyword", "Keyword", "Specific keyword", "Another specific keyword").join([ $dot$ ])
-  ]  
-]
-
-#table-of-contents()
-
-#list-of-figures()
-
-#list-of-tables()
-
-#list-of-listings()
-
-#list-of-acronyms()
-
-#set page(numbering: "1")
-#counter(page).update(1)
 
 = Introduction <introduction>
 
-#lorem(110)
+#lorem(200)
 
 #paragraph("Outline")[
   #lorem(30)
@@ -66,7 +41,7 @@
 
 = Conclusion <conclusion>
 
-#lorem(110)
+#lorem(200)
 
 = Showcase
 

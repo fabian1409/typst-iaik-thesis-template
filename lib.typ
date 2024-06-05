@@ -2,15 +2,16 @@
 
 // thesis template
 #let thesis(
-  title: "Title and \nSubtitle\nof the Thesis",
+  title: "Title and\nSubtitle\nof the Thesis",
   author: "Firstname Lastname, BSc",
   degree: "Degree",
   curriculum: "Curriculum",
-  supervisors: (
-    "Firstname Lastname, academic degrees of first supervisor",
-    "Firstname Lastname, academic degrees of next supervisor",
-  ),
+  supervisors: (),
   date: datetime.today(),
+  acknowledgements: none,
+  abstract: none,
+  keywords: (),
+  acronyms: none,
   body
 ) = {
   if type(supervisors) != array {
@@ -121,20 +122,55 @@
     v(8pt)
   }
 
-  body
-}
+  pagebreak()
 
-// abstract
+  // affidavit
+  
+  align(horizon)[
+    #align(center, text(size: 12pt, weight: "bold", "AFFIDAVIT"))
+    #v(0.5cm)
 
-#let abstract(body) = {
+    #block(inset: (left: 1cm, right: 1cm))[
+      I declare that I have authored this thesis independently, that I have not used other than the declared sources/resources, and that I have explicitly indicated all material which has been quoted either literally or by content from the sources used.
+      The text document uploaded to TUGRAZonline is identical to
+      the present master’s thesis.
+
+      #v(2.5cm)
+
+      #line(length: 100%, stroke: .5pt)
+      #v(-.5cm)
+      #align(center, text(size: 8pt, "Date, Signature"))
+    ]
+  ]
+
+  set page(numbering: "i")
+
+  init-acronyms(acronyms)
+
+  // acknowledgements
+
+  heading(level: 1, outlined: false, numbering: none, "Acknowledgements")
+
+  acknowledgements
+
+  // abstract 
+
   heading(level: 1, outlined: false, numbering: none, "Abstract")
-  body
-}
 
-// table of contents
+  abstract
+  
+  // keywords 
 
-#let table-of-contents() = [
-  #show outline.entry.where(level: 1): it => {
+  linebreak()
+  linebreak()
+
+  strong("Keywords.")
+  h(8pt)
+  keywords.join([ $dot$ ])
+
+  // outline
+  
+  show outline.entry.where(level: 1): it => {
     if it.body != [References] {
       v(14pt, weak: true)
       link(it.element.location(), strong([#it.body #h(1fr) #it.page]))
@@ -143,23 +179,23 @@
     }
   }
 
-  #show outline.entry.where(level: 2): it => {
+  show outline.entry.where(level: 2): it => {
     link(it.element.location(), [
       #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
     ])
   }
 
-  #show outline.entry.where(level: 3): it => {
+  show outline.entry.where(level: 3): it => {
     link(it.element.location(), [
       #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
     ])
   }
 
-  #outline(indent: auto, depth: 3)
-]
+  outline(indent: auto, depth: 3)
 
-#let list-of-figures() = context [
-  #if query(figure.where(kind: image)).len() > 0 {    
+  // list of figures
+  
+  context if query(figure.where(kind: image)).len() > 0 {    
     show outline.entry: it => {
       link(it.element.location(), [
         #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
@@ -167,10 +203,10 @@
     }
     outline(title: "List of Figures", target: figure.where(kind: image))
   }
-]
 
-#let list-of-tables() = context [
-  #if query(figure.where(kind: table)).len() > 0 {    
+  // list of tables
+
+  context if query(figure.where(kind: table)).len() > 0 {    
     show outline.entry: it => {
       link(it.element.location(), [
         #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
@@ -178,10 +214,10 @@
     }
     outline(title: "List of Tables", target: figure.where(kind: table))
   }
-]
 
-#let list-of-listings() = context [
-  #if query(figure.where(kind: "listing")).len() > 0 {    
+  // list of listings
+
+  context if query(figure.where(kind: "listing")).len() > 0 {    
     show outline.entry: it => {
       link(it.element.location(), [
         #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
@@ -189,6 +225,80 @@
     }
     outline(title: "List of Listings", target: figure.where(kind: "listing"))
   }
+
+  list-of-acronyms()
+
+  set page(numbering: "1")
+  counter(page).update(1)
+
+  body
+}
+
+// abstract
+
+#let abstract(body) = {
+  // heading(level: 1, outlined: false, numbering: none, "Abstract")
+  // body
+}
+
+// table of contents
+
+#let table-of-contents() = [
+  // #show outline.entry.where(level: 1): it => {
+  //   if it.body != [References] {
+  //     v(14pt, weak: true)
+  //     link(it.element.location(), strong([#it.body #h(1fr) #it.page]))
+  //   } else {
+  //     it
+  //   }
+  // }
+
+  // #show outline.entry.where(level: 2): it => {
+  //   link(it.element.location(), [
+  //     #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
+  //   ])
+  // }
+
+  // #show outline.entry.where(level: 3): it => {
+  //   link(it.element.location(), [
+  //     #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
+  //   ])
+  // }
+
+  // #outline(indent: auto, depth: 3)
+]
+
+#let list-of-figures() = context [
+  // #if query(figure.where(kind: image)).len() > 0 {    
+  //   show outline.entry: it => {
+  //     link(it.element.location(), [
+  //       #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
+  //     ])
+  //   }
+  //   outline(title: "List of Figures", target: figure.where(kind: image))
+  // }
+]
+
+#let list-of-tables() = context [
+  // #if query(figure.where(kind: table)).len() > 0 {    
+  //   show outline.entry: it => {
+  //     link(it.element.location(), [
+  //       #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
+  //     ])
+  //   }
+  //   outline(title: "List of Tables", target: figure.where(kind: table))
+  // }
+]
+
+#let list-of-listings() = context [
+  // #if query(figure.where(kind: "listing")).len() > 0 {    
+  //   show outline.entry: it => {
+  //     link(it.element.location(), [
+  //       #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
+  //     ])
+  //   }
+  //   outline(title: "List of Listings", target: figure.where(kind: "listing"))
+  // }
 ]
 
 // code
@@ -211,29 +321,29 @@
 // acknowledgements
 
 #let acknowledgements(body) = {
-  heading(level: 1, outlined: false, numbering: none, "Acknowledgements")
-  body
+  // heading(level: 1, outlined: false, numbering: none, "Acknowledgements")
+  // body
 }
 
 // affidavit
 
 #let affidavit() = [
-  #pagebreak()
-  #set align(horizon)
-  #align(center, text(size: 12pt, weight: "bold", "AFFIDAVIT"))
-  #v(0.5cm)
+  // #pagebreak()
+  // #set align(horizon)
+  // #align(center, text(size: 12pt, weight: "bold", "AFFIDAVIT"))
+  // #v(0.5cm)
 
-  #block(inset: (left: 1cm, right: 1cm))[
-    I declare that I have authored this thesis independently, that I have not used other than the declared sources/resources, and that I have explicitly indicated all material which has been quoted either literally or by content from the sources used.
-    The text document uploaded to TUGRAZonline is identical to
-    the present master’s thesis.
+  // #block(inset: (left: 1cm, right: 1cm))[
+  //   I declare that I have authored this thesis independently, that I have not used other than the declared sources/resources, and that I have explicitly indicated all material which has been quoted either literally or by content from the sources used.
+  //   The text document uploaded to TUGRAZonline is identical to
+  //   the present master’s thesis.
 
-    #v(2.5cm)
+  //   #v(2.5cm)
 
-    #line(length: 100%, stroke: .5pt)
-    #v(-.5cm)
-    #align(center, text(size: 8pt, "Date, Signature"))
-  ]
+  //   #line(length: 100%, stroke: .5pt)
+  //   #v(-.5cm)
+  //   #align(center, text(size: 8pt, "Date, Signature"))
+  // ]
 ]
 
 // paragraph with title

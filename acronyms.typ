@@ -95,20 +95,22 @@
   assert(
     sorted in ("keep", "up", "down"), message: "Sorted must be a string either \"keep\", \"up\" or \"down\"",
   )
-  heading(level: level, outlined: outlined, numbering: none)[#title]
-  acros.display(
-    acronyms=>{
-      let acr-list = acronyms.keys()
-      if sorted == "up" {
-        acr-list = acr-list.sorted()
-      } else if sorted == "down" {
-        acr-list = acr-list.sorted().rev()
-      }
-      for acr in acr-list{
-        table(
-          columns: (acr-col-size, 100% - acr-col-size), stroke: none, inset: 0pt, [*#acr#label(acr)#delimiter*], [#acrl(acr, link: false)],
-        )
-      }
-    },
-  )
+  context if acros.get() != none {
+    heading(level: level, outlined: outlined, numbering: none)[#title]
+    acros.display(
+      acronyms=>{
+        let acr-list = acronyms.keys()
+        if sorted == "up" {
+          acr-list = acr-list.sorted()
+        } else if sorted == "down" {
+          acr-list = acr-list.sorted().rev()
+        }
+        for acr in acr-list{
+          table(
+            columns: (acr-col-size, 100% - acr-col-size), stroke: none, inset: 0pt, [*#acr#label(acr)#delimiter*], [#acrl(acr, link: false)],
+          )
+        }
+      },
+    )
+  }
 }
