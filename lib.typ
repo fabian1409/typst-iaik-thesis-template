@@ -13,6 +13,10 @@
   date: datetime.today(),
   body
 ) = {
+  if type(supervisors) != array {
+    panic("supervisors must be an array")
+  }
+
   set document(title: title.split("\n").join(" "), author: author)
 
   set text(size: 11pt, font: "New Computer Modern", hyphenate: false)
@@ -34,12 +38,12 @@
   block(text(size: 16pt, weight: "bold", title))
 
   set align(center + bottom)
-  [
-    #set par(leading: 9pt)
+
+  block(par(leading: 9pt, [
     #text(size: 12pt, weight: "bold", "MASTER'S THESIS") \
     #text("to achieve the university degree of\n" + degree) \
     #text("Master's degree programme: " + curriculum)    
-  ]
+  ]))
 
   v(1cm)
 
@@ -47,21 +51,12 @@
   block(text(weight: "bold", "Graz University of Technology"))
   v(1.1cm)
 
-  if supervisors.len() > 1 {
-    block(text(size: 10pt, weight: "bold", "Supervisors"))
-  } else {
-    block(text(size: 10pt, weight: "bold", "Supervisor"))
-  }
-
-  for supervisor in supervisors [
-    #text(size: 10pt, supervisor) \
-  ]
+  block(text(size: 10pt, weight: "bold", "Supervisor" + if supervisors.len() > 1 { "s" }))
+  text(size: 10pt, supervisors.join("\n"))
 
   block(text(size: 10pt, "Institute of Applied Information Processing and Communications"), below: 1.75cm)
 
-  box(text(
-    size: 8pt, [Graz, #date.display("[month repr:long] [year]")],
-  ))
+  box(text(size: 8pt, [Graz, #date.display("[month repr:long] [year]")],))
 
   // style rules
 
@@ -163,31 +158,37 @@
   #outline(indent: auto, depth: 3)
 ]
 
-#let list-of-figures() = [
-  #show outline.entry: it => {
-    link(it.element.location(), [
-      #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
-    ])
+#let list-of-figures() = context [
+  #if query(figure.where(kind: image)).len() > 0 {    
+    show outline.entry: it => {
+      link(it.element.location(), [
+        #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
+      ])
+    }
+    outline(title: "List of Figures", target: figure.where(kind: image))
   }
-  #outline(title: "List of Figures", target: figure.where(kind: image))
 ]
 
-#let list-of-tables() = [
-  #show outline.entry: it => {
-    link(it.element.location(), [
-      #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
-    ])
+#let list-of-tables() = context [
+  #if query(figure.where(kind: table)).len() > 0 {    
+    show outline.entry: it => {
+      link(it.element.location(), [
+        #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
+      ])
+    }
+    outline(title: "List of Tables", target: figure.where(kind: table))
   }
-  #outline(title: "List of Tables", target: figure.where(kind: table))
 ]
 
-#let list-of-listings() = [
-  #show outline.entry: it => {
-    link(it.element.location(), [
-      #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
-    ])
+#let list-of-listings() = context [
+  #if query(figure.where(kind: "listing")).len() > 0 {    
+    show outline.entry: it => {
+      link(it.element.location(), [
+        #it.body #box(width: 1fr, inset: (right: .4cm), repeat[~.]) #it.page
+      ])
+    }
+    outline(title: "List of Listings", target: figure.where(kind: "listing"))
   }
-  #outline(title: "List of Listings", target: figure.where(kind: "listing"))
 ]
 
 // code

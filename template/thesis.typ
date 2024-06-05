@@ -29,10 +29,10 @@
 
 #abstract()[
   #lorem(110)
-]
 
-#paragraph("Keywords")[
-  Broad keyword $dot$ Keyword $dot$ Specific keyword $dot$ Another specific keyword
+  #paragraph("Keywords")[
+    #("Broad keyword", "Keyword", "Specific keyword", "Another specific keyword").join([ $dot$ ])
+  ]  
 ]
 
 #table-of-contents()
