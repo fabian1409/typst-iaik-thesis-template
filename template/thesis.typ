@@ -27,9 +27,8 @@
 
 #lorem(200)
 
-#paragraph("Outline")[
-  #lorem(30)
-]
+*Outline.*
+#lorem(30)
 
 = Background <background>
 
