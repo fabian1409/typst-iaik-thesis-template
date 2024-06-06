@@ -233,20 +233,3 @@
 
   body
 }
-
-// code
-
-#let code-block(caption: "Listing", label: none, body) = [
-  #show raw.line: it => {
-    text(fill: gray)[#it.number]
-    h(1em)
-    it.body
-  }
-  #figure(
-    box(
-      align(left, body), width: 100%, stroke: (left: .5pt), inset: 10pt, fill: white.darken(0%),
-    ), caption: caption, kind: "listing", supplement: [Listing],
-  ) #label
-]
-
-#let code(content) = box(content)

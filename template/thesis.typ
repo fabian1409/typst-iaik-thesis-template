@@ -23,6 +23,22 @@
   ),
 )
 
+#let listing(caption: none, label: none, body) = [
+  #figure(
+    box(
+      align(left, [
+        #show raw.line: it => {
+          text(fill: gray)[#it.number]
+          h(1em)
+          it.body
+        }
+        #body
+      ]), width: 100%, stroke: (left: .5pt), inset: 10pt, fill: white.darken(0%),
+    ), caption: caption, kind: "listing", supplement: [Listing],
+  )
+  #label
+]
+
 = Introduction <introduction>
 
 #lorem(200)
@@ -52,18 +68,20 @@ This is how to use acronyms #acr("NN").
 
 Some examples of code blocks and inline code with highlighting.
 
-=== Block
+=== Listing
 
-#code-block(caption: "Rust Hello World", label: <code>,
-```rust
-fn main() {
-    println!("Hello World!");
-}
-```)
+#listing(
+  ```rust
+  fn main() {
+      println!("Hello World!");
+  }
+  ```,
+  caption: "Rust Hello World", label: <code>
+)
 
 === Inline
 
-This is some inline code #code(```rust println!("Hello World!")```).
+This is some inline code ```rust println!("Hello World!")```.
 
 == Lists
 
