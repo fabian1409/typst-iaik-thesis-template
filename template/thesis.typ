@@ -17,9 +17,9 @@
   ],
   keywords: ("Broad keyword", "Keyword", "Specific keyword", "Another specific keyword"),
   acronyms: (
-    "NN": ("Neural Network"),
-    "OS": ("Operating System",),
-    "BIOS": ("Basic Input/Output System", "Basic Input/Output Systems"),
+    "NN": "Neural Network",
+    "OS": "Operating System",
+    "BIOS": "Basic Input/Output System",
   ),
 )
 

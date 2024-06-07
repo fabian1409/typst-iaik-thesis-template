@@ -1,4 +1,87 @@
-#import "acronyms.typ": *
+// acronymns 
+
+#let prefix = "acronym-state-"
+#let acros = state("acronyms", none)
+
+#let init-acronyms(acronyms) = {
+  acros.update(acronyms)
+}
+
+// Display acronym
+#let display(acr, text) = {
+  link(label(acr), text)
+}
+
+// Display acronym in short form.
+#let acrs(acr, plural: false) = {
+  if plural { display(acr, acr + "s") } else { display(acr, acr) }
+}
+// Display acronym in short plural form
+#let acrspl(acr) = { acrs(acr, plural: true) }
+
+// Display acronym in long form.
+#let acrl(acr, plural: false) = {
+  acros.display(
+    acronyms => {
+      let def = acronyms.at(acr)
+      assert(type(def) == "string")
+      if plural {
+        display(acr, def + "s")
+      } else {
+        display(acr, def)
+      }
+    },
+  )
+}
+
+// Display acronym in long plural form.
+#let acrlpl(acr) = { acrl(acr, plural: true) }
+
+// Display acronym for the first time.
+#let acrf(acr, plural: false) = {
+  if plural {
+    display(acr, [#acrlpl(acr) (#acr\s)])
+  } else {
+    display(acr, [#acrl(acr) (#acr)])
+  }
+  state(prefix + acr, false).update(true)
+}
+
+// Display acronym in plural form for the first time.
+#let acrfpl(acr) = { acrf(acr, plural: true) }
+
+// Display acronym. Expands it if used for the first time.
+#let acr(acr, plural: false) = {
+  state(prefix + acr, false).display(seen => {
+    if seen {
+      if plural { acrspl(acr) } else { acrs(acr) }
+    } else {
+      if plural { acrfpl(acr) } else { acrf(acr) }
+    }
+  })
+}
+
+// Display acronym in the plural form. Expands it if used for the first time.
+#let acrpl(acronym) = { acr(acronym, plural: true) }
+
+// Print an index of all the acronyms and their definitions.
+#let list-of-acronyms(
+  title: "List of Acronyms", delimiter: ":", acr-col-size: 20%, level: 1, outlined: false,
+) = {
+  context if acros.get() != none {
+    heading(level: level, outlined: outlined, numbering: none)[#title]
+    acros.display(
+      acronyms=>{
+        for acr in acronyms.keys() {
+          table(
+            columns: (acr-col-size, 100% - acr-col-size), stroke: none, inset: 0pt, [*#acr#label(acr)#delimiter*], [#acrl(acr)],
+          )
+        }
+      },
+    )
+  }
+}
+
 
 // thesis template
 #let thesis(
@@ -85,8 +168,14 @@
     // if not chapter begin print current chapter in header
     if chapter == none {
       let elems = query(selector(heading.where(level: 1)).before(here()))
+      let counter = counter(heading.where(level: 1))
       if elems.len() != 0 {
-        align(center, text(style: "italic", "Chapter " + counter(heading.where(level: 1)).display("1") + " " + elems.last().body))
+        if counter.get().first() == 0 {
+          // dont print chapter + counter for outline
+          align(center, text(style: "italic", elems.last().body))
+        } else {
+          align(center, text(style: "italic", "Chapter " + counter.display("1") + " " + elems.last().body))
+        }
       }
       v(-.25cm)
     }
