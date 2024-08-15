@@ -1,4 +1,4 @@
-// acronymns 
+// acronyms 
 
 #let prefix = "acronym-state-"
 #let acros = state("acronyms", none)
@@ -66,7 +66,7 @@
 
 // Print an index of all the acronyms and their definitions.
 #let list-of-acronyms(
-  title: "List of Acronyms", delimiter: ":", acr-col-size: 20%, level: 1, outlined: false,
+  title: "List of Acronyms", delimiter: none, acr-col-size: 20%, level: 1, outlined: false,
 ) = {
   context if acros.get() != none {
     heading(level: level, outlined: outlined, numbering: none)[#title]
@@ -82,18 +82,39 @@
   }
 }
 
+#let in-outline = state("in-outline", false)
+
+// Display long caption in figure and short caption in list of figures
+#let captions(long, short) = context if in-outline.get() { short } else { long }
+
+#let listing(caption: none, label: none, body) = [
+  // show line numbers
+  #show raw.where(block: true): it => {
+    set par(justify: false)
+    show raw.line: it => {
+      text(fill: gray)[#if it.number < 10 { text(" ") }#it.number]
+      h(1em)
+      it.body
+    }
+    box(width: 100%, align(left, it))
+  }
+  #figure(
+    box(body, stroke: 0pt, radius: 5pt, inset: 10pt, fill: white.darken(3%)),
+    caption: caption, kind: "listing", supplement: [Listing],
+  )
+  #label
+]
 
 // thesis template
 #let thesis(
   title: "Title and\nSubtitle\nof the Thesis",
   author: "Firstname Lastname, BSc",
-  degree: "Degree",
   curriculum: "Curriculum",
   supervisors: (),
   date: datetime.today(),
-  acknowledgements: none,
+  acknowledgments: none,
   abstract: none,
-  keywords: (),
+  abstract_de: none,
   acronyms: none,
   body
 ) = {
@@ -125,7 +146,7 @@
 
   block(par(leading: 9pt, [
     #text(size: 12pt, weight: "bold", "MASTER'S THESIS") \
-    #text("to achieve the university degree of\n" + degree) \
+    #text("to achieve the university degree of\nDiplom-Ingenieur") \
     #text("Master's degree programme: " + curriculum)    
   ]))
 
@@ -170,7 +191,7 @@
       let elems = query(selector(heading.where(level: 1)).before(here()))
       let counter = counter(heading.where(level: 1))
       if elems.len() != 0 {
-        if counter.get().first() == 0 {
+        if counter.get().first() == 0 or elems.last().body == [Bibliography] {
           // dont print chapter + counter for outline
           align(center, text(style: "italic", elems.last().body))
         } else {
@@ -197,17 +218,20 @@
   }
 
   show heading.where(level: 2): it => {
+    v(10pt)
     text(size: 14pt, it)
     v(10pt)
   }
 
   show heading.where(level: 3): it => {
+    v(8pt)
     text(size: 12pt, it)
     v(8pt)
   }
 
   show heading.where(level: 4): it => {
-    text(size: 11pt, it)
+    v(8pt)
+    text(size: 11pt, it.body)
     v(8pt)
   }
 
@@ -240,24 +264,21 @@
 
   heading(level: 1, outlined: false, numbering: none, "Acknowledgements")
 
-  acknowledgements
+  acknowledgments
 
   // abstract 
 
   heading(level: 1, outlined: false, numbering: none, "Abstract")
 
   abstract
+
+  heading(level: 1, outlined: false, numbering: none, "Kurzfassung")
+
+  abstract_de
   
-  // keywords 
-
-  linebreak()
-  linebreak()
-
-  strong("Keywords.")
-  h(8pt)
-  keywords.join([ $dot$ ])
-
   // outline
+
+  in-outline.update(true)
   
   show outline.entry.where(level: 1): it => {
     if it.body != [References] {
@@ -316,6 +337,8 @@
   }
 
   list-of-acronyms()
+
+  in-outline.update(false)
 
   set page(numbering: "1")
   counter(page).update(1)

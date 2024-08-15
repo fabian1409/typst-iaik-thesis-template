@@ -3,19 +3,36 @@
 #show: thesis.with(
   title: "Title and\nSubtitle\nof the Thesis",
   author: "Firstname Lastname, BSc",
-  degree: "Diplom-Ingenieur",
   curriculum: "Computer Science",
   supervisors: (
     "Firstname Lastname, academic degrees of first supervisor",
     "Firstname Lastname, academic degrees of next supervisor",
   ),
-  acknowledgements: [
-    #lorem(200)
+  acknowledgments: [
+    I want to take this opportunity to thank my supervisors, especially Fabian Schmid, who answered countless questions and gave me valuable feedback during the last year.
+
+    Furthermore, I want to thank Franco Nieddu, who inspired me to take on this topic and helped me when I was stuck with a particular problem or design choice during development.
+
+    Finally, I want to thank everyone who supported me during my studies and while working on this thesis.
   ],
   abstract: [
-    #lorem(200)
+    #lorem(100)
+
+    #v(10pt)
+
+    *Keywords.*
+    #h(8pt)
+    #("Broad keyword", "Keyword", "Specific keyword", "Another specific keyword").join([ $dot$ ])
   ],
-  keywords: ("Broad keyword", "Keyword", "Specific keyword", "Another specific keyword"),
+  abstract_de: [   
+    #lorem(100)
+
+    #v(10pt)
+
+    *Schlagwörter.*
+    #h(8pt)
+    #("Broad keyword", "Keyword", "Specific keyword", "Another specific keyword").join([ $dot$ ])
+  ],
   acronyms: (
     "NN": "Neural Network",
     "OS": "Operating System",
@@ -23,21 +40,6 @@
   ),
 )
 
-#let listing(caption: none, label: none, body) = [
-  #figure(
-    box(
-      align(left, [
-        #show raw.line: it => {
-          text(fill: gray)[#it.number]
-          h(1em)
-          it.body
-        }
-        #body
-      ]), width: 100%, stroke: (left: .5pt), inset: 10pt, fill: white.darken(0%),
-    ), caption: caption, kind: "listing", supplement: [Listing],
-  )
-  #label
-]
 
 = Introduction <introduction>
 
@@ -65,8 +67,6 @@ This is how to refernce labels @introduction, @equation, @table, @code, @image
 This is how to use acronyms #acr("NN").
 
 == Code
-
-Some examples of code blocks and inline code with highlighting.
 
 === Listing
 
